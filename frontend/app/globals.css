@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Lora:ital,wght@0,400;0,600;1,400&display=swap');
+@import "tailwindcss";
+
+:root {
+  --parchment:     #f5f0e8;
+  --parchment-dark:#ede6d6;
+  --ink:           #2c2416;
+  --ink-light:     #5c4f3a;
+  --forest:        #4a7c59;
+  --forest-dark:   #2d5a3a;
+  --violet:        #7c5cbf;
+  --violet-dark:   #5a3d99;
+  --gold:          #c9a84c;
+  --gold-dark:     #a07830;
+}
+ 
+body {
+  background-color: var(--parchment);
+  color: var(--ink);
+  font-family: 'Lora', Georgia, serif;
+  min-height: 100vh;
+}
