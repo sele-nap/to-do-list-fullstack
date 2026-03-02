@@ -71,6 +71,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit, isDraggable
       )}
 
       <button
+        data-testid="toggle"
         onClick={() => onToggle(todo.id)}
         className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
           todo.completed
@@ -115,6 +116,7 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit, isDraggable
       </div>
 
       <button
+        data-testid="delete"
         onClick={() => onDelete(todo.id)}
         className="text-[var(--ink-light)] hover:text-red-400 transition-colors text-lg"
       >

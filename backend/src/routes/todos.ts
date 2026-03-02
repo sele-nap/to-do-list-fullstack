@@ -38,7 +38,7 @@ router.put('/:id', (req: Request, res: Response) => {
     return
   }
 
-  const { title } = req.body
+  const { title } = (req.body ?? {}) as { title?: string }
 
   if (title !== undefined) {
     db.prepare('UPDATE todos SET title = ? WHERE id = ?').run(title, id)
