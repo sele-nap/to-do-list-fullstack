@@ -4,17 +4,30 @@ import db from '../database/db'
 const router = Router()
 
 router.get('/', (req: Request, res: Response) => {
-  const todos = db.prepare('SELECT * FROM todos ORDER BY created_at DESC').all()
+  const todos = db.prepare('SELECT * FROM todos ORDER BY position ASC').all()
   res.json(todos)
 })
 
 router.post('/', (req: Request, res: Response) => {
+  db.prepare('UPDATE todos SET position = position + 1').run()
   const { title, due_date } = req.body
   const result = db.prepare(
-    'INSERT INTO todos (title, due_date) VALUES (?, ?)'
+    'INSERT INTO todos (title, due_date, position) VALUES (?, ?, 0)'
   ).run(title, due_date ?? null)
   const newTodo = db.prepare('SELECT * FROM todos WHERE id = ?').get(result.lastInsertRowid)
   res.status(201).json(newTodo)
+})
+
+router.patch('/reorder', (req: Request, res: Response) => {
+  const { ids } = req.body as { ids: number[] }
+  const update = db.prepare('UPDATE todos SET position = ? WHERE id = ?')
+  const updateAll = db.transaction((ids: number[]) => {
+    ids.forEach((id, index) => {
+      update.run(index, id)
+    })
+  })
+  updateAll(ids)
+  res.status(204).send()
 })
 
 router.put('/:id', (req: Request, res: Response) => {

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 interface Todo {
   id: number
@@ -12,14 +14,24 @@ interface Todo {
 
 interface TodoItemProps {
   todo: Todo
-  onToggle: (id: number) => void
-  onDelete: (id: number) => void
-  onEdit:   (id: number, newTitle: string) => void
+  onToggle:    (id: number) => void
+  onDelete:    (id: number) => void
+  onEdit:      (id: number, newTitle: string) => void
+  isDraggable: boolean
 }
 
-export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemProps) {
-  const [isEditing,  setIsEditing]  = useState(false)
-  const [editValue,  setEditValue]  = useState(todo.title)
+export default function TodoItem({ todo, onToggle, onDelete, onEdit, isDraggable }: TodoItemProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [editValue, setEditValue] = useState(todo.title)
+
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: todo.id })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity:   isDragging ? 0.4 : 1,
+    zIndex:    isDragging ? 10 : undefined,
+  }
 
   const handleSave = () => {
     const trimmed = editValue.trim()
@@ -37,11 +49,26 @@ export default function TodoItem({ todo, onToggle, onDelete, onEdit }: TodoItemP
   }
 
   return (
-    <div className={`flex items-center gap-3 p-4 rounded-xl border transition-all duration-300 ${
-      todo.completed
-        ? 'opacity-60 border-[var(--parchment-dark)] bg-[var(--parchment-dark)]'
-        : 'border-[var(--gold)] bg-[var(--parchment-dark)]'
-    }`}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`flex items-center gap-3 p-4 rounded-xl border transition-colors duration-200 ${
+        todo.completed
+          ? 'opacity-60 border-[var(--parchment-dark)] bg-[var(--parchment-dark)]'
+          : 'border-[var(--gold)] bg-[var(--parchment-dark)]'
+      }`}
+    >
+
+      {isDraggable && (
+        <button
+          {...attributes}
+          {...listeners}
+          className="text-[var(--ink-light)] hover:text-[var(--gold)] cursor-grab active:cursor-grabbing touch-none flex-shrink-0 text-lg leading-none"
+          title="Drag to reorder"
+        >
+          ⠿
+        </button>
+      )}
 
       <button
         onClick={() => onToggle(todo.id)}

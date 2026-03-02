@@ -16,7 +16,10 @@ db.exec(`
 
 try {
   db.exec(`ALTER TABLE todos ADD COLUMN due_date TEXT`)
-} catch {
-}
+} catch {}
+
+try {
+  db.exec(`ALTER TABLE todos ADD COLUMN position INTEGER DEFAULT 0`)
+} catch {}
 
 export default db

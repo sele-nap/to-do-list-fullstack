@@ -4,6 +4,19 @@ import { useState, useEffect } from 'react'
 import TodoForm from './Components/TodoForm'
 import TodoItem from './Components/TodoItem'
 import FilterBar, { type Filter } from './Components/FilterBar'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from '@dnd-kit/core'
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from '@dnd-kit/sortable'
 
 interface Todo {
   id: number
@@ -19,6 +32,10 @@ export default function Home() {
   const [todos, setTodos]   = useState<Todo[]>([])
   const [filter, setFilter] = useState<Filter>('all')
   const [isDark, setIsDark] = useState(false)
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  )
 
   useEffect(() => {
     fetch(API)
@@ -63,6 +80,23 @@ export default function Home() {
     })
     const updated = await res.json()
     setTodos(prev => prev.map(t => t.id === id ? updated : t))
+  }
+
+  const handleDragEnd = async (event: DragEndEvent) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = todos.findIndex(t => t.id === active.id)
+    const newIndex = todos.findIndex(t => t.id === over.id)
+
+    const newOrder = arrayMove(todos, oldIndex, newIndex)
+    setTodos(newOrder)
+
+    await fetch(`${API}/reorder`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids: newOrder.map(t => t.id) }),
+    })
   }
 
   const toggleDark = () => {
@@ -116,25 +150,37 @@ export default function Home() {
 
         <FilterBar current={filter} onChange={setFilter} counts={counts} />
 
-        <div className="flex flex-col gap-3">
-          {filteredTodos.length === 0 ? (
-            <p className="text-center text-[var(--ink-light)] italic py-8">
-              {filter === 'done'   ? 'No completed tasks yet... ✨' :
-               filter === 'active' ? 'All tasks are done! 🌿'      :
-               'Your grimoire is empty... add a task! 🍄'}
-            </p>
-          ) : (
-            filteredTodos.map(todo => (
-              <TodoItem
-                key={todo.id}
-                todo={todo}
-                onToggle={handleToggle}
-                onDelete={handleDelete}
-                onEdit={handleEdit}
-              />
-            ))
-          )}
-        </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+        >
+          <SortableContext
+            items={filteredTodos.map(t => t.id)}
+            strategy={verticalListSortingStrategy}
+          >
+            <div className="flex flex-col gap-3">
+              {filteredTodos.length === 0 ? (
+                <p className="text-center text-[var(--ink-light)] italic py-8">
+                  {filter === 'done'   ? 'No completed tasks yet... ✨' :
+                   filter === 'active' ? 'All tasks are done! 🌿'      :
+                   'Your grimoire is empty... add a task! 🍄'}
+                </p>
+              ) : (
+                filteredTodos.map(todo => (
+                  <TodoItem
+                    key={todo.id}
+                    todo={todo}
+                    onToggle={handleToggle}
+                    onDelete={handleDelete}
+                    onEdit={handleEdit}
+                    isDraggable={filter === 'all'}
+                  />
+                ))
+              )}
+            </div>
+          </SortableContext>
+        </DndContext>
 
       </div>
     </main>
