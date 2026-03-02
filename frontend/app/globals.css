@@ -20,3 +20,21 @@ body {
   font-family: 'Lora', Georgia, serif;
   min-height: 100vh;
 }
+
+.dark body {
+  background-color: #25201a;
+  color: #ddd0b8;
+}
+
+.dark {
+  --parchment:      #342c22;
+  --parchment-dark: #25201a;
+  --ink:            #ddd0b8;
+  --ink-light:      #a09280;
+  --gold:           #9a7828;
+  --gold-dark:      #7a5818;
+  --forest:         #3e6648;
+  --forest-dark:    #2c4e36;
+  --violet:         #6e52b8;
+  --violet-dark:    #503d90;
+}

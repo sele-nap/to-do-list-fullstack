@@ -9,8 +9,10 @@ router.get('/', (req: Request, res: Response) => {
 })
 
 router.post('/', (req: Request, res: Response) => {
-  const { title } = req.body
-  const result = db.prepare('INSERT INTO todos (title) VALUES (?)').run(title)
+  const { title, due_date } = req.body
+  const result = db.prepare(
+    'INSERT INTO todos (title, due_date) VALUES (?, ?)'
+  ).run(title, due_date ?? null)
   const newTodo = db.prepare('SELECT * FROM todos WHERE id = ?').get(result.lastInsertRowid)
   res.status(201).json(newTodo)
 })
@@ -22,9 +24,17 @@ router.put('/:id', (req: Request, res: Response) => {
     res.status(404).json({ error: 'Tâche non trouvée' })
     return
   }
-  const current = todo as { completed: number }
-  const newCompleted = current.completed === 0 ? 1 : 0
-  db.prepare('UPDATE todos SET completed = ? WHERE id = ?').run(newCompleted, id)
+
+  const { title } = req.body
+
+  if (title !== undefined) {
+    db.prepare('UPDATE todos SET title = ? WHERE id = ?').run(title, id)
+  } else {
+    const current = todo as { completed: number }
+    const newCompleted = current.completed === 0 ? 1 : 0
+    db.prepare('UPDATE todos SET completed = ? WHERE id = ?').run(newCompleted, id)
+  }
+
   const updated = db.prepare('SELECT * FROM todos WHERE id = ?').get(id)
   res.json(updated)
 })
