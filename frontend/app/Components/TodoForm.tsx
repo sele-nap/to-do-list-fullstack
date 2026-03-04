@@ -6,7 +6,8 @@ import { CalendarDays, X, ChevronDown, ChevronUp, FolderOpen, RefreshCw, StickyN
 import type { Priority, Recurrence } from './TodoItem'
 
 interface TodoFormProps {
-  onAdd: (title: string, due_date?: string, priority?: Priority, notes?: string, category?: string, recurrence?: Recurrence) => void
+  onAdd:      (title: string, due_date?: string, priority?: Priority, notes?: string, category?: string, recurrence?: Recurrence) => void
+  inputRef?:  React.RefObject<HTMLInputElement | null>
 }
 
 const PRIORITY_OPTIONS: { value: Priority; label: string; active: string }[] = [
@@ -27,7 +28,7 @@ const RECURRENCE_OPTIONS: { value: Recurrence; label: string }[] = [
   { value: 'monthly', label: 'Monthly' },
 ]
 
-export default function TodoForm({ onAdd }: TodoFormProps) {
+export default function TodoForm({ onAdd, inputRef }: TodoFormProps) {
   const [value,      setValue]      = useState('')
   const [dueDate,    setDueDate]    = useState('')
   const [priority,   setPriority]   = useState<Priority>('none')
@@ -56,11 +57,12 @@ export default function TodoForm({ onAdd }: TodoFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 mb-6">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 mb-6" suppressHydrationWarning>
 
       {/* ── Ligne principale ── */}
       <div className="flex gap-2">
         <input
+          ref={inputRef}
           type="text"
           value={value}
           onChange={e => setValue(e.target.value)}
