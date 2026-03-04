@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-
-const API = 'http://localhost:5000/api/auth'
+import { toast } from 'sonner'
+import { AUTH_URL } from '@/lib/config'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -18,7 +18,7 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const res  = await fetch(`${API}/${mode}`, {
+    const res  = await fetch(`${AUTH_URL}/${mode}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -27,6 +27,7 @@ export default function LoginPage() {
     setLoading(false)
     if (!res.ok) { setError(data.error); return }
     localStorage.setItem('token', data.token)
+    toast.success(mode === 'login' ? 'Welcome back! 🔮' : 'Account created! ✨')
     router.push('/')
   }
 

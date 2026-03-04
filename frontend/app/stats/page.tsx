@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Moon, Sun, ArrowLeft } from 'lucide-react'
+import { TODOS_URL } from '@/lib/config'
+import { authHeaders } from '@/lib/api'
 
 interface Stats {
   total:          number
@@ -15,8 +17,6 @@ interface Stats {
   byPriority:     { high: number; medium: number; low: number }
   archived:       number
 }
-
-const API = 'http://localhost:5000/api/todos'
 
 const STAT_CARDS = [
   { key: 'total',     label: 'Total tasks', emoji: '📜', color: 'text-[var(--ink)]'       },
@@ -41,9 +41,7 @@ export default function StatsPage() {
     const token = localStorage.getItem('token')
     if (!token) { router.push('/login'); return }
 
-    fetch(`${API}/stats`, {
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-    })
+    fetch(`${TODOS_URL}/stats`, { headers: authHeaders() })
       .then(res => {
         if (res.status === 401) { router.push('/login'); return null }
         return res.json()
