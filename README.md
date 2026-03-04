@@ -1,6 +1,6 @@
-# Grimoire — To-Do List
+# To-Do List
 
-Full-stack task manager with a cozy aesthetic. Next.js frontend, Express + SQLite backend.
+Full-stack task manager. Next.js frontend, Express + SQLite backend.
 
 ## Stack
 
