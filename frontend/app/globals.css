@@ -2,10 +2,10 @@
 @import "tailwindcss";
 
 :root {
-  --parchment:     #f5f0e8;
-  --parchment-dark:#ede6d6;
-  --ink:           #2c2416;
-  --ink-light:     #5c4f3a;
+  --parchment:     #edf2ec;
+  --parchment-dark:#dce8db;
+  --ink:           #243020;
+  --ink-light:     #5a6e55;
   --forest:        #4a7c59;
   --forest-dark:   #2d5a3a;
   --violet:        #7c5cbf;
@@ -13,7 +13,7 @@
   --gold:          #c9a84c;
   --gold-dark:     #a07830;
 }
- 
+
 body {
   background-color: var(--parchment);
   color: var(--ink);
@@ -21,20 +21,22 @@ body {
   min-height: 100vh;
 }
 
+/* Animations gérées par Framer Motion */
+
 .dark body {
-  background-color: #25201a;
-  color: #ddd0b8;
+  background-color: #161e18;
+  color: #d4cdb8;
 }
 
 .dark {
-  --parchment:      #342c22;
-  --parchment-dark: #25201a;
-  --ink:            #ddd0b8;
-  --ink-light:      #a09280;
+  --parchment:      #1e2920;
+  --parchment-dark: #161e18;
+  --ink:            #d4cdb8;
+  --ink-light:      #8a9e8a;
   --gold:           #9a7828;
   --gold-dark:      #7a5818;
-  --forest:         #3e6648;
-  --forest-dark:    #2c4e36;
-  --violet:         #6e52b8;
+  --forest:         #4a7855;
+  --forest-dark:    #36583e;
+  --violet:         #7052b8;
   --violet-dark:    #503d90;
 }
